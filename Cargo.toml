@@ -10,7 +10,7 @@ homepage = "https://github.com/jmg049/dtmf_tones"
 documentation = "https://docs.rs/dtmf_tones"
 readme = "README.md"
 keywords = ["dtmf", "telephony", "audio", "no_std", "const"]
-categories = ["no-std", "embedded", "multimedia", "signal-processing"]
+categories = ["no-std", "embedded", "multimedia"]
 exclude = [".github", "target"]
 
 [lib]
