@@ -1,6 +1,6 @@
 [package]
 name = "dtmf_tones"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 authors = ["Jack Geraghty <jgeraghty049@gmail.com>"]
 description = "A zero-heap, no_std, const-first DTMF keypad frequency table with runtime tolerance helpers."

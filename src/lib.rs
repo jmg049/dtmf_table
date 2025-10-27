@@ -38,6 +38,7 @@
 
 
 use core::cmp::Ordering;
+use core::fmt::Display;
 
 /// Type-safe, closed set of DTMF keys.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -46,6 +47,12 @@ pub enum DtmfKey {
     K4, K5, K6, B,
     K7, K8, K9, C,
     Star, K0, Hash, D,
+}
+
+impl Display for DtmfKey {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.to_char())
+    }
 }
 
 impl DtmfKey {
@@ -122,6 +129,12 @@ pub struct DtmfTone {
     pub key: DtmfKey,
     pub low_hz: u16,
     pub high_hz: u16,
+}
+
+impl Display for DtmfTone {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}: ({} Hz, {} Hz)", self.key, self.low_hz, self.high_hz)
+    }
 }
 
 /// Zero-sized table wrapper for const and runtime utilities.
@@ -256,6 +269,16 @@ impl DtmfTable {
         let key = Self::from_pair_exact(nearest_low, nearest_high)
             .expect("canonical pair must map to a key");
         (key, nearest_low, nearest_high)
+    }
+}
+
+impl Display for DtmfTable {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        writeln!(f, "DTMF Table:")?;
+        for tone in Self::ALL_TONES.iter() {
+            writeln!(f, "  {}", tone)?;
+        }
+        Ok(())
     }
 }
 
