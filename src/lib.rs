@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 //! # DTMF Table
 //!
 //! A zero-heap, `no_std`, const-first implementation of the standard DTMF keypad

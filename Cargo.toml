@@ -1,6 +1,28 @@
 [package]
 name = "dtmf_tones"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
+authors = ["Jack Geraghty <jgeraghty049@gmail.com>"]
+description = "A zero-heap, no_std, const-first DTMF keypad frequency table with runtime tolerance helpers."
+license = "MIT"
+repository = "https://github.com/jmg049/dtmf_tones"
+homepage = "https://github.com/jmg049/dtmf_tones"
+documentation = "https://docs.rs/dtmf_tones"
+readme = "README.md"
+keywords = ["dtmf", "telephony", "audio", "no_std", "const"]
+categories = ["no-std", "embedded", "multimedia", "signal-processing"]
+exclude = [".github", "target"]
+
+[lib]
+name = "dtmf_table"
+path = "src/lib.rs"
+crate-type = ["rlib"]
+
+[features]
+# Default to no_std, optionally allow std for convenience/testing.
+default = []
+std = []
 
 [dependencies]
+# None required
+
