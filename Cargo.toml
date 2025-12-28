@@ -16,13 +16,16 @@ exclude = [".github", "target"]
 [lib]
 name = "dtmf_table"
 path = "src/lib.rs"
-crate-type = ["rlib"]
+crate-type = ["rlib", "cdylib"]
 
 [features]
 # Default to no_std, optionally allow std for convenience/testing.
 default = []
 std = []
+# Optional Python bindings via PyO3 (requires std)
+python = ["dep:pyo3", "std"]
 
 [dependencies]
-# None required
+# PyO3 for Python bindings (optional)
+pyo3 = { version = "0.22", features = ["extension-module"], optional = true }
 

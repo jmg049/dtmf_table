@@ -39,6 +39,10 @@
 use core::cmp::Ordering;
 use core::fmt::Display;
 
+// Python bindings (optional, feature-gated)
+#[cfg(feature = "python")]
+mod python;
+
 /// Type-safe, closed set of DTMF keys.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DtmfKey {
@@ -177,6 +181,7 @@ impl Display for DtmfTone {
 }
 
 /// Zero-sized table wrapper for const and runtime utilities.
+#[derive(Debug)]
 pub struct DtmfTable;
 
 impl Default for DtmfTable {
