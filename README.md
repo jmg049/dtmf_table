@@ -1,4 +1,10 @@
+<div align="center">
+
 # DTMF Table
+
+[![PyPI][pypi-img]][pypi] [![License: MIT][license-img]][license]
+
+</div>
 
 A zero-heap, `no_std` friendly, **const-first** implementation of the standard DTMF (Dual-Tone Multi-Frequency) keypad used in telephony systems.
 
@@ -187,3 +193,9 @@ if key is not None:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+[pypi]: https://pypi.org/project/dtmf-table/
+[pypi-img]: https://img.shields.io/pypi/v/dtmf-table?style=for-the-badge&color=009E73&label=PyPI
+
+[license-img]: https://img.shields.io/crates/l/audio_samples?style=for-the-badge&label=license&labelColor=gray
+[license]: https://github.com/jmg049/dtmf_table/blob/main/LICENSE
