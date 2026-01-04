@@ -1,4 +1,4 @@
-name: Build and Deploy Python Documentation
+name: Build and Deploy Documentation
 
 on:
   push:
@@ -27,22 +27,11 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Set up Rust
-      uses: actions-rust-lang/setup-rust-toolchain@v1
-      with:
-        toolchain: stable
-
-    - name: Install maturin
-      run: pip install maturin
-
-    - name: Build Python package
-      run: |
-        maturin develop --features python
-
     - name: Install documentation dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r docs/requirements.txt
+        pip install sphinx sphinx-autodoc-typehints sphinx-rtd-theme myst-parser sphinx-copybutton
+        pip install numpy>=1.24.4
 
     - name: Build documentation
       run: |
@@ -51,11 +40,9 @@ jobs:
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
-      if: github.ref == 'refs/heads/main'
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
-      if: github.ref == 'refs/heads/main'
       with:
         path: 'docs/build/html'
 
