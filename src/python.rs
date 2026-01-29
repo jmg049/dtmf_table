@@ -42,7 +42,7 @@ impl PyDtmfKey {
     /// Raises:
     ///     ValueError: If the character is not a valid DTMF key
     #[staticmethod]
-    #[pyo3(signature = (c), text_signature = "(c: str) -> DtmfKey")]
+    #[pyo3(signature = (c: "str"), text_signature = "(c: str) -> DtmfKey")]
     fn from_char(c: char) -> PyResult<Self> {
         match RustDtmfKey::from_char(c) {
             Some(key) => Ok(PyDtmfKey { inner: key }),
@@ -122,7 +122,7 @@ impl PyDtmfTone {
     ///     low_hz (int): Low frequency in Hz
     ///     high_hz (int): High frequency in Hz
     #[new]
-    #[pyo3(signature = (key, low_hz, high_hz), text_signature = "(key: DtmfKey, low_hz: int, high_hz: int)")]
+    #[pyo3(signature = (key: "DtmfKey", low_hz: "int", high_hz: "int"), text_signature = "(key: DtmfKey, low_hz: int, high_hz: int)")]
     fn new(key: PyDtmfKey, low_hz: u16, high_hz: u16) -> Self {
         PyDtmfTone {
             inner: RustDtmfTone {
@@ -259,6 +259,56 @@ impl PyDtmfTable {
             .collect()
     }
 
+    /// Get all DTMF keys as a 4x4 matrix.
+    ///
+    /// Returns:
+    ///     list[list[DtmfKey]]: 4x4 matrix of keys in keypad layout
+    #[staticmethod]
+    #[pyo3(signature = (), text_signature = "() -> list[list[DtmfKey]]")]
+    fn all_keys_matrix() -> Vec<Vec<PyDtmfKey>> {
+        let keys = &RustDtmfTable::ALL_KEYS;
+        vec![
+            keys[0..4].iter().map(|&k| PyDtmfKey { inner: k }).collect(),
+            keys[4..8].iter().map(|&k| PyDtmfKey { inner: k }).collect(),
+            keys[8..12]
+                .iter()
+                .map(|&k| PyDtmfKey { inner: k })
+                .collect(),
+            keys[12..16]
+                .iter()
+                .map(|&k| PyDtmfKey { inner: k })
+                .collect(),
+        ]
+    }
+
+    /// Get all DTMF tones as a 4x4 matrix.
+    ///
+    /// Returns:
+    ///     list[list[DtmfTone]]: 4x4 matrix of tones in keypad layout
+    #[staticmethod]
+    #[pyo3(signature = (), text_signature = "() -> list[list[DtmfTone]]")]
+    fn all_tones_matrix() -> Vec<Vec<PyDtmfTone>> {
+        let tones = &RustDtmfTable::ALL_TONES;
+        vec![
+            tones[0..4]
+                .iter()
+                .map(|&t| PyDtmfTone { inner: t })
+                .collect(),
+            tones[4..8]
+                .iter()
+                .map(|&t| PyDtmfTone { inner: t })
+                .collect(),
+            tones[8..12]
+                .iter()
+                .map(|&t| PyDtmfTone { inner: t })
+                .collect(),
+            tones[12..16]
+                .iter()
+                .map(|&t| PyDtmfTone { inner: t })
+                .collect(),
+        ]
+    }
+
     /// Look up frequencies for a given key.
     ///
     /// Args:
@@ -378,6 +428,27 @@ fn dtmf_table(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // Add module-level constants
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
+
+    // Add DTMF frequency constants
+    m.add(
+        "LOWS",
+        (
+            RustDtmfTable::LOWS[0],
+            RustDtmfTable::LOWS[1],
+            RustDtmfTable::LOWS[2],
+            RustDtmfTable::LOWS[3],
+        ),
+    )?;
+    m.add(
+        "HIGHS",
+        (
+            RustDtmfTable::HIGHS[0],
+            RustDtmfTable::HIGHS[1],
+            RustDtmfTable::HIGHS[2],
+            RustDtmfTable::HIGHS[3],
+        ),
+    )?;
+
     m.add(
         "__doc__",
         r#"DTMF (Dual-Tone Multi-Frequency) frequency table for telephony applications.
@@ -393,18 +464,24 @@ Key Features:
 - Frequency snapping for noisy estimates
 - Support for all 16 standard DTMF tones
 
+Constants:
+    LOWS: Low-band DTMF frequencies in Hz (697, 770, 852, 941)
+    HIGHS: High-band DTMF frequencies in Hz (1209, 1336, 1477, 1633)
+
 Classes:
     DtmfKey: Represents a single DTMF key (0-9, *, #, A-D)
     DtmfTone: Combines a key with its frequency pair
     DtmfTable: Main lookup table for conversions and analysis
 
 Example:
-    >>> from dtmf_table import DtmfTable, DtmfKey
+    >>> from dtmf_table import DtmfTable, DtmfKey, LOWS, HIGHS
     >>> table = DtmfTable()
     >>> key = DtmfKey.from_char('5')
     >>> low, high = key.freqs()
     >>> print(f"Key {key} = {low}Hz + {high}Hz")
     Key 5 = 770Hz + 1336Hz
+    >>> print(f"Low frequencies: {LOWS}")
+    Low frequencies: (697, 770, 852, 941)
 "#,
     )?;
 

@@ -1,47 +1,45 @@
 API Reference
 =============
 
-This section contains the complete API reference for the dtmf-table Python package.
+This page provides detailed API documentation for the ``dtmf_table`` Python package.
 
-Core Classes
-------------
-
-.. currentmodule:: dtmf_table
-
-DtmfKey
-^^^^^^^
-
-.. autoclass:: DtmfKey
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-   .. automethod:: __init__
-
-DtmfTone
-^^^^^^^^
-
-.. autoclass:: DtmfTone
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-   .. automethod:: __init__
-
-DtmfTable
-^^^^^^^^^
-
-.. autoclass:: DtmfTable
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-   .. automethod:: __init__
-
-Module-level Functions
-----------------------
+Module Overview
+---------------
 
 .. automodule:: dtmf_table
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Constants
+---------
+
+.. autodata:: dtmf_table.LOWS
+   :annotation:
+
+.. autodata:: dtmf_table.HIGHS
+   :annotation:
+
+DtmfKey
+-------
+
+.. autoclass:: dtmf_table.DtmfKey
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+DtmfTone
+--------
+
+.. autoclass:: dtmf_table.DtmfTone
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+DtmfTable
+---------
+
+.. autoclass:: dtmf_table.DtmfTable
    :members:
    :undoc-members:
    :show-inheritance:

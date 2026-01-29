@@ -1,15 +1,17 @@
-DTMF Table - Python Documentation
-===================================
+DTMF Table
+===========
 
-A zero-heap, ``no_std`` friendly, **const-first** implementation of the standard DTMF (Dual-Tone Multi-Frequency) keypad used in telephony systems.
+.. image:: https://img.shields.io/pypi/v/dtmf-table?style=for-the-badge&color=009E73&label=PyPI
+   :target: https://pypi.org/project/dtmf-table/
+   :alt: PyPI
 
-This Python package provides compile-time safe mappings between keypad keys and their canonical low/high frequencies, along with **runtime helpers** for practical audio processing. Built with Rust for performance and safety.
+.. image:: https://img.shields.io/crates/l/audio_samples?style=for-the-badge&label=license&labelColor=gray
+   :target: https://github.com/jmg049/dtmf_table/blob/main/LICENSE
+   :alt: License: MIT
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+A zero-heap, Rust backed, **const-first** implementation of the standard DTMF (Dual-Tone Multi-Frequency) keypad used in telephony systems.
 
-   api
+This Python package provides fast, efficient DTMF frequency lookups built on Rust bindings with a Pythonic API.
 
 Features
 --------
@@ -18,19 +20,24 @@ Features
 - **Closed enum for keys** — invalid keys are unrepresentable
 - **Zero allocations** in the underlying Rust implementation
 - Runtime helpers:
-   - Tolerance-based reverse lookup (e.g., from FFT peaks)
-   - Nearest snapping for noisy frequency estimates
-   - Iteration over all tones and keys
+
+  - Tolerance-based reverse lookup (e.g., from FFT peaks)
+  - Nearest snapping for noisy frequency estimates
+  - Iteration over all tones and keys
 
 Installation
 ------------
+
+Install from PyPI using pip:
 
 .. code-block:: bash
 
    pip install dtmf-table
 
-Quick Example
--------------
+Quick Start
+-----------
+
+Here's a simple example to get you started:
 
 .. code-block:: python
 
@@ -56,19 +63,65 @@ Quick Example
 DTMF Frequency Table
 --------------------
 
-The library provides access to all 16 standard DTMF frequencies:
+The library contains all 16 standard DTMF frequencies used in telephony:
 
-+--------+--------+--------+--------+--------+
-|        | 1209Hz | 1336Hz | 1477Hz | 1633Hz |
-+========+========+========+========+========+
-| 697Hz  |    1   |    2   |    3   |    A   |
-+--------+--------+--------+--------+--------+
-| 770Hz  |    4   |    5   |    6   |    B   |
-+--------+--------+--------+--------+--------+
-| 852Hz  |    7   |    8   |    9   |    C   |
-+--------+--------+--------+--------+--------+
-| 941Hz  |    *   |    0   |    #   |    D   |
-+--------+--------+--------+--------+--------+
+.. list-table::
+   :header-rows: 1
+   :stub-columns: 1
+
+   * -
+     - 1209 Hz
+     - 1336 Hz
+     - 1477 Hz
+     - 1633 Hz
+   * - 697 Hz
+     - 1
+     - 2
+     - 3
+     - A
+   * - 770 Hz
+     - 4
+     - 5
+     - 6
+     - B
+   * - 852 Hz
+     - 7
+     - 8
+     - 9
+     - C
+   * - 941 Hz
+     - \*
+     - 0
+     - #
+     - D
+
+Audio Processing Integration
+-----------------------------
+
+This library pairs naturally with audio analysis pipelines:
+
+1. Take an audio segment
+2. Compute FFT magnitude
+3. Pick two frequency peaks
+4. Use ``from_pair_tol_f64`` or ``nearest_f64`` to resolve the DTMF key
+
+Example:
+
+.. code-block:: python
+
+   # freq1 and freq2 are the peak frequencies extracted from your FFT
+   table = DtmfTable()
+   key = table.from_pair_tol_f64(freq1, freq2, 5.0)
+   if key is not None:
+       print(f"Detected key: {key.to_char()}")
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   api
 
 Indices and tables
 ==================

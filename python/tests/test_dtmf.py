@@ -1,8 +1,9 @@
 """
 Test suite for the dtmf_table Python module.
 """
+
 import pytest
-from dtmf_table import DtmfKey, DtmfTable, DtmfTone
+from python.dtmf_table import DtmfKey, DtmfTable, DtmfTone
 
 
 class TestDtmfKey:
@@ -16,11 +17,11 @@ class TestDtmfKey:
             assert key.to_char() == digit
 
         # Test special characters
-        star_key = DtmfKey.from_char('*')
-        assert star_key.to_char() == '*'
+        star_key = DtmfKey.from_char("*")
+        assert star_key.to_char() == "*"
 
-        hash_key = DtmfKey.from_char('#')
-        assert hash_key.to_char() == '#'
+        hash_key = DtmfKey.from_char("#")
+        assert hash_key.to_char() == "#"
 
         # Test letters
         for letter in "ABCD":
@@ -29,14 +30,14 @@ class TestDtmfKey:
 
     def test_from_char_invalid(self):
         """Test creating DtmfKey from invalid characters."""
-        invalid_chars = ['E', 'F', 'x', '@', '!', ' ']
+        invalid_chars = ["E", "F", "x", "@", "!", " "]
         for char in invalid_chars:
             with pytest.raises(ValueError, match="Invalid DTMF character"):
                 DtmfKey.from_char(char)
 
         # Test empty string separately (different error message)
         with pytest.raises(ValueError, match="expected a string of length 1"):
-            DtmfKey.from_char('')
+            DtmfKey.from_char("")
 
     def test_to_char(self):
         """Test converting DtmfKey to character."""
@@ -48,32 +49,32 @@ class TestDtmfKey:
     def test_freqs(self):
         """Test getting frequencies for DTMF keys."""
         # Test some known frequency mappings
-        key_5 = DtmfKey.from_char('5')
+        key_5 = DtmfKey.from_char("5")
         low, high = key_5.freqs()
         assert low == 770
         assert high == 1336
 
-        key_1 = DtmfKey.from_char('1')
+        key_1 = DtmfKey.from_char("1")
         low, high = key_1.freqs()
         assert low == 697
         assert high == 1209
 
-        key_hash = DtmfKey.from_char('#')
+        key_hash = DtmfKey.from_char("#")
         low, high = key_hash.freqs()
         assert low == 941
         assert high == 1477
 
     def test_string_representation(self):
         """Test string representation of DtmfKey."""
-        key = DtmfKey.from_char('5')
-        assert str(key) == '5'
+        key = DtmfKey.from_char("5")
+        assert str(key) == "5"
         assert repr(key) == "DtmfKey('5')"
 
     def test_equality(self):
         """Test DtmfKey equality."""
-        key1 = DtmfKey.from_char('5')
-        key2 = DtmfKey.from_char('5')
-        key3 = DtmfKey.from_char('6')
+        key1 = DtmfKey.from_char("5")
+        key2 = DtmfKey.from_char("5")
+        key3 = DtmfKey.from_char("6")
 
         assert key1 == key2
         assert key1 != key3
@@ -81,9 +82,9 @@ class TestDtmfKey:
 
     def test_hash(self):
         """Test DtmfKey hashing for use in sets/dicts."""
-        key1 = DtmfKey.from_char('5')
-        key2 = DtmfKey.from_char('5')
-        key3 = DtmfKey.from_char('6')
+        key1 = DtmfKey.from_char("5")
+        key2 = DtmfKey.from_char("5")
+        key3 = DtmfKey.from_char("6")
 
         # Same keys should have same hash
         assert hash(key1) == hash(key2)
@@ -98,7 +99,7 @@ class TestDtmfTone:
 
     def test_creation(self):
         """Test creating DtmfTone."""
-        key = DtmfKey.from_char('5')
+        key = DtmfKey.from_char("5")
         tone = DtmfTone(key, 770, 1336)
 
         assert tone.key == key
@@ -107,16 +108,16 @@ class TestDtmfTone:
 
     def test_properties(self):
         """Test DtmfTone properties."""
-        key = DtmfKey.from_char('A')
+        key = DtmfKey.from_char("A")
         tone = DtmfTone(key, 697, 1633)
 
-        assert tone.key.to_char() == 'A'
+        assert tone.key.to_char() == "A"
         assert tone.low_hz == 697
         assert tone.high_hz == 1633
 
     def test_string_representation(self):
         """Test string representation of DtmfTone."""
-        key = DtmfKey.from_char('5')
+        key = DtmfKey.from_char("5")
         tone = DtmfTone(key, 770, 1336)
 
         assert str(tone) == "5: (770 Hz, 1336 Hz)"
@@ -124,9 +125,9 @@ class TestDtmfTone:
 
     def test_equality(self):
         """Test DtmfTone equality."""
-        key1 = DtmfKey.from_char('5')
-        key2 = DtmfKey.from_char('5')
-        key3 = DtmfKey.from_char('6')
+        key1 = DtmfKey.from_char("5")
+        key2 = DtmfKey.from_char("5")
+        key3 = DtmfKey.from_char("6")
 
         tone1 = DtmfTone(key1, 770, 1336)
         tone2 = DtmfTone(key2, 770, 1336)
@@ -168,7 +169,7 @@ class TestDtmfTable:
 
     def test_lookup_key(self):
         """Test looking up frequencies for a key."""
-        key = DtmfKey.from_char('5')
+        key = DtmfKey.from_char("5")
         low, high = DtmfTable.lookup_key(key)
         assert low == 770
         assert high == 1336
@@ -178,7 +179,7 @@ class TestDtmfTable:
         # Valid pair
         key = DtmfTable.from_pair_exact(770, 1336)
         assert key is not None
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
 
         # Invalid pair
         key = DtmfTable.from_pair_exact(800, 1300)
@@ -189,12 +190,12 @@ class TestDtmfTable:
         # Normal order
         key1 = DtmfTable.from_pair_normalised(770, 1336)
         assert key1 is not None
-        assert key1.to_char() == '5'
+        assert key1.to_char() == "5"
 
         # Reversed order
         key2 = DtmfTable.from_pair_normalised(1336, 770)
         assert key2 is not None
-        assert key2.to_char() == '5'
+        assert key2.to_char() == "5"
 
         # Should be the same key
         assert key1 == key2
@@ -206,7 +207,7 @@ class TestDtmfTable:
         # Within tolerance
         key = table.from_pair_tol_u32(772, 1340, 5)
         assert key is not None
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
 
         # Outside tolerance
         key = table.from_pair_tol_u32(800, 1400, 5)
@@ -215,7 +216,7 @@ class TestDtmfTable:
         # Edge case: exactly at tolerance
         key = table.from_pair_tol_u32(775, 1341, 5)
         assert key is not None
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
 
     def test_from_pair_tol_f64(self):
         """Test tolerance-based lookup with floats."""
@@ -224,7 +225,7 @@ class TestDtmfTable:
         # Within tolerance (example from FFT bin centers)
         key = table.from_pair_tol_f64(770.2, 1335.6, 6.0)
         assert key is not None
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
 
         # Outside tolerance
         key = table.from_pair_tol_f64(800.0, 1400.0, 5.0)
@@ -236,7 +237,7 @@ class TestDtmfTable:
 
         # Test snapping to nearest frequencies
         key, snapped_low, snapped_high = table.nearest_u32(768, 1342)
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
         assert snapped_low == 770
         assert snapped_high == 1336
 
@@ -246,7 +247,7 @@ class TestDtmfTable:
 
         # Test snapping with floating point values
         key, snapped_low, snapped_high = table.nearest_f64(768.5, 1342.3)
-        assert key.to_char() == '5'
+        assert key.to_char() == "5"
         assert snapped_low == 770
         assert snapped_high == 1336
 
@@ -266,23 +267,43 @@ class TestDtmfTable:
         """Test that all standard DTMF frequencies are correctly mapped."""
         # Standard DTMF frequency matrix
         expected_mapping = {
-            ('1', 697, 1209), ('2', 697, 1336), ('3', 697, 1477), ('A', 697, 1633),
-            ('4', 770, 1209), ('5', 770, 1336), ('6', 770, 1477), ('B', 770, 1633),
-            ('7', 852, 1209), ('8', 852, 1336), ('9', 852, 1477), ('C', 852, 1633),
-            ('*', 941, 1209), ('0', 941, 1336), ('#', 941, 1477), ('D', 941, 1633),
+            ("1", 697, 1209),
+            ("2", 697, 1336),
+            ("3", 697, 1477),
+            ("A", 697, 1633),
+            ("4", 770, 1209),
+            ("5", 770, 1336),
+            ("6", 770, 1477),
+            ("B", 770, 1633),
+            ("7", 852, 1209),
+            ("8", 852, 1336),
+            ("9", 852, 1477),
+            ("C", 852, 1633),
+            ("*", 941, 1209),
+            ("0", 941, 1336),
+            ("#", 941, 1477),
+            ("D", 941, 1633),
         }
 
         for char, expected_low, expected_high in expected_mapping:
             # Test forward lookup
             key = DtmfKey.from_char(char)
             low, high = key.freqs()
-            assert low == expected_low, f"Key {char}: expected low {expected_low}, got {low}"
-            assert high == expected_high, f"Key {char}: expected high {expected_high}, got {high}"
+            assert low == expected_low, (
+                f"Key {char}: expected low {expected_low}, got {low}"
+            )
+            assert high == expected_high, (
+                f"Key {char}: expected high {expected_high}, got {high}"
+            )
 
             # Test reverse lookup
             found_key = DtmfTable.from_pair_exact(expected_low, expected_high)
-            assert found_key is not None, f"Could not find key for frequencies {expected_low}, {expected_high}"
-            assert found_key.to_char() == char, f"Expected {char}, got {found_key.to_char()}"
+            assert found_key is not None, (
+                f"Could not find key for frequencies {expected_low}, {expected_high}"
+            )
+            assert found_key.to_char() == char, (
+                f"Expected {char}, got {found_key.to_char()}"
+            )
 
 
 if __name__ == "__main__":

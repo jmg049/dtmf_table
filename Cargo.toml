@@ -1,6 +1,6 @@
 [package]
 name = "dtmf_table"
-version = "1.0.3"
+version = "1.1.0"
 edition = "2024"
 authors = ["Jack Geraghty <jgeraghty049@gmail.com>"]
 description = "A zero-heap, no_std, const-first DTMF keypad frequency table with runtime tolerance helpers. Also available in Python"
@@ -11,7 +11,36 @@ documentation = "https://docs.rs/dtmf_table"
 readme = "README.md"
 keywords = ["dtmf", "telephony", "audio", "no_std", "const"]
 categories = ["no-std", "embedded", "multimedia"]
-exclude = [".github", "target"]
+exclude = [
+    # Python package (top-level only, NOT src/python/)
+    "/python/",
+    "pyproject.toml",
+    "uv.lock",
+
+    # Documentation
+    "/docs/",
+
+    # Build scripts
+    "build_docs.py",
+    "deploy_docs.sh",
+
+    # Examples, tests, benchmarks
+    "/examples/",
+    "/tests/",
+    "/benches/",
+
+    # Images and media
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.pdf",
+    "*.zip",
+
+    # CI/CD and workspace
+    ".github/",
+    "*.code-workspace",
+]
 
 [lib]
 name = "dtmf_table"
@@ -27,5 +56,7 @@ python = ["dep:pyo3", "std"]
 
 [dependencies]
 # PyO3 for Python bindings (optional)
-pyo3 = { version = "0.27.2", features = ["extension-module"], optional = true }
-
+pyo3 = { version = "0.27.2", features = [
+    "extension-module",
+    "experimental-inspect",
+], optional = true }

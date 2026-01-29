@@ -113,6 +113,13 @@ impl Display for DtmfKey {
 
 impl DtmfKey {
     /// Strict constructor from `char` (const).
+    ///
+    /// # Arguments
+    /// * `c` - Character to convert to a DTMF key
+    ///
+    /// # Returns
+    /// `Some(DtmfKey)` if the character is valid, `None` otherwise
+    #[inline]
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
             '1' => Some(Self::K1),
@@ -137,9 +144,15 @@ impl DtmfKey {
 
     /// Panic-on-invalid (const), useful with char literals at compile time.
     ///
-    /// # Panics
+    /// # Arguments
+    /// * `c` - Character to convert to a DTMF key
     ///
+    /// # Returns
+    /// The corresponding DTMF key
+    ///
+    /// # Panics
     /// Panics if the character is not a valid DTMF key character.
+    #[inline]
     #[allow(clippy::panic)]
     pub const fn from_char_or_panic(c: char) -> Self {
         match Self::from_char(c) {
@@ -149,6 +162,10 @@ impl DtmfKey {
     }
 
     /// Back to char (const).
+    ///
+    /// # Returns
+    /// The character representation of this DTMF key
+    #[inline]
     pub const fn to_char(self) -> char {
         match self {
             Self::K1 => '1',
@@ -171,6 +188,10 @@ impl DtmfKey {
     }
 
     /// Canonical (low, high) frequencies in Hz (const).
+    ///
+    /// # Returns
+    /// Tuple of (low_frequency_hz, high_frequency_hz)
+    #[inline]
     pub const fn freqs(self) -> (u16, u16) {
         match self {
             Self::K1 => (697, 1209),
@@ -231,8 +252,10 @@ impl Default for DtmfTable {
 }
 
 impl DtmfTable {
-    /// Canonical low-/high-band frequencies (Hz).
+    /// Canonical low-band DTMF frequencies in Hz.
     pub const LOWS: [u16; 4] = [697, 770, 852, 941];
+
+    /// Canonical high-band DTMF frequencies in Hz.
     pub const HIGHS: [u16; 4] = [1209, 1336, 1477, 1633];
 
     /// All keys in keypad order (row-major).
@@ -340,6 +363,10 @@ impl DtmfTable {
     ];
 
     /// Constructor (zero-sized instance).
+    ///
+    /// # Returns
+    /// A new DtmfTable instance
+    #[inline]
     pub const fn new() -> Self {
         DtmfTable
     }
@@ -347,11 +374,26 @@ impl DtmfTable {
     /* ---------------------- Const utilities ---------------------- */
 
     /// Forward: key → (low, high) (const).
+    ///
+    /// # Arguments
+    /// * `key` - The DTMF key to look up
+    ///
+    /// # Returns
+    /// Tuple of (low_frequency_hz, high_frequency_hz)
+    #[inline]
     pub const fn lookup_key(key: DtmfKey) -> (u16, u16) {
         key.freqs()
     }
 
     /// Reverse: exact (low, high) → key (const). Order-sensitive.
+    ///
+    /// # Arguments
+    /// * `low` - Low frequency in Hz
+    /// * `high` - High frequency in Hz
+    ///
+    /// # Returns
+    /// `Some(DtmfKey)` if the exact pair matches, `None` otherwise
+    #[inline]
     pub const fn from_pair_exact(low: u16, high: u16) -> Option<DtmfKey> {
         match (low, high) {
             (697, 1209) => Some(DtmfKey::K1),
@@ -375,6 +417,14 @@ impl DtmfTable {
     }
 
     /// Reverse with normalisation (const): accepts (high, low) as well.
+    ///
+    /// # Arguments
+    /// * `a` - First frequency in Hz
+    /// * `b` - Second frequency in Hz
+    ///
+    /// # Returns
+    /// `Some(DtmfKey)` if the pair matches (in any order), `None` otherwise
+    #[inline]
     pub const fn from_pair_normalised(a: u16, b: u16) -> Option<DtmfKey> {
         let (low, high) = if a <= b { (a, b) } else { (b, a) };
         Self::from_pair_exact(low, high)
@@ -383,17 +433,34 @@ impl DtmfTable {
     /* ---------------------- Runtime helpers ---------------------- */
 
     /// Iterate keys in keypad order (no allocation).
+    ///
+    /// # Returns
+    /// Iterator over all DTMF keys
+    #[inline]
     pub fn iter_keys(&self) -> core::slice::Iter<'static, DtmfKey> {
         Self::ALL_KEYS.iter()
     }
 
     /// Iterate tones (key + freqs) in keypad order (no allocation).
+    ///
+    /// # Returns
+    /// Iterator over all DTMF tones
+    #[inline]
     pub fn iter_tones(&self) -> core::slice::Iter<'static, DtmfTone> {
         Self::ALL_TONES.iter()
     }
 
     /// Reverse lookup with tolerance in Hz (integer inputs).
     /// Matches only when *both* low and high fall within `±tol_hz` of a canonical pair.
+    ///
+    /// # Arguments
+    /// * `low` - Low frequency in Hz
+    /// * `high` - High frequency in Hz
+    /// * `tol_hz` - Tolerance in Hz
+    ///
+    /// # Returns
+    /// `Some(DtmfKey)` if a match is found within tolerance, `None` otherwise
+    #[inline]
     pub fn from_pair_tol_u32(&self, low: u32, high: u32, tol_hz: u32) -> Option<DtmfKey> {
         let (lo, hi) = normalise_u32_pair(low, high);
         for t in Self::ALL_TONES {
@@ -407,6 +474,15 @@ impl DtmfTable {
     }
 
     /// Reverse lookup with tolerance for floating-point estimates (e.g., FFT bin centres).
+    ///
+    /// # Arguments
+    /// * `low` - Low frequency in Hz
+    /// * `high` - High frequency in Hz
+    /// * `tol_hz` - Tolerance in Hz
+    ///
+    /// # Returns
+    /// `Some(DtmfKey)` if a match is found within tolerance, `None` otherwise
+    #[inline]
     pub fn from_pair_tol_f64(&self, low: f64, high: f64, tol_hz: f64) -> Option<DtmfKey> {
         let (lo, hi) = normalise_f64_pair(low, high);
         for t in Self::ALL_TONES {
@@ -420,9 +496,16 @@ impl DtmfTable {
     /// Snap an arbitrary (low, high) estimate to the nearest canonical pair and return (key, snapped_low, snapped_high).
     /// Uses absolute distance independently on low and high bands.
     ///
-    /// # Panics
+    /// # Arguments
+    /// * `low` - Low frequency estimate in Hz
+    /// * `high` - High frequency estimate in Hz
     ///
+    /// # Returns
+    /// Tuple of (key, snapped_low_hz, snapped_high_hz)
+    ///
+    /// # Panics
     /// This function should never panic as it always snaps to canonical frequency pairs which are guaranteed to have valid keys.
+    #[inline]
     pub fn nearest_u32(&self, low: u32, high: u32) -> (DtmfKey, u16, u16) {
         let (lo, hi) = normalise_u32_pair(low, high);
         let nearest_low = nearest_in_set_u32(lo, &Self::LOWS);
@@ -434,9 +517,16 @@ impl DtmfTable {
 
     /// Floating-point variant of nearest snap.
     ///
-    /// # Panics
+    /// # Arguments
+    /// * `low` - Low frequency estimate in Hz
+    /// * `high` - High frequency estimate in Hz
     ///
+    /// # Returns
+    /// Tuple of (key, snapped_low_hz, snapped_high_hz)
+    ///
+    /// # Panics
     /// This function should never panic as it always snaps to canonical frequency pairs which are guaranteed to have valid keys.
+    #[inline]
     pub fn nearest_f64(&self, low: f64, high: f64) -> (DtmfKey, u16, u16) {
         let (lo, hi) = normalise_f64_pair(low, high);
         let nearest_low = nearest_in_set_f64(lo, &Self::LOWS);
