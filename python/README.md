@@ -147,7 +147,7 @@ This keeps the signal-processing logic decoupled from keypad semantics while rem
 
 ## Documentation
 
-* **Python API**: [https://jmg049.github.io/dtmf_tones/](https://jmg049.github.io/dtmf_tones/)
+* **Python API**: [https://jmg049.github.io/dtmf_table/](https://jmg049.github.io/dtmf_table/)
 
 ---
 
