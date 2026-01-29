@@ -2,7 +2,7 @@
 
 # DTMF Table
 
-[![PyPI][pypi-img]][pypi] [![License: MIT][license-img]][license]
+[![Crates.io][crate-img]][crate] [![Docs.rs][docs-img]][docs] [![PyPI][pypi-img]][pypi] [![PyDocs][docs-img-py]][docs-python] [![License: MIT][license-img]][license]
 
 </div>
 
@@ -185,8 +185,8 @@ if key is not None:
 
 ## Documentation
 
-- **Rust**: [docs.rs/dtmf_tones](https://docs.rs/dtmf_tones)
-- **Python**: https://jmg049.github.io/dtmf_tones/
+- **Rust**: [docs.rs/dtmf_tables](https://docs.rs/dtmf_table)
+- **Python**: https://jmg049.github.io/dtmf_table/
 
 ---
 
@@ -194,8 +194,17 @@ if key is not None:
 
 This project is licensed under the [MIT License](LICENSE).
 
+[crate]: https://crates.io/crates/dtmf_table
+[crate-img]: https://img.shields.io/crates/v/dtmf_table?style=for-the-badge&color=009E73&label=crates.io
+
+[docs]: https://docs.rs/dtmf_table
+[docs-img]: https://img.shields.io/badge/docs.rs-online-009E73?style=for-the-badge&labelColor=gray
+
+[license-img]: https://img.shields.io/crates/l/dtmf_table?style=for-the-badge&label=license&labelColor=gray  
+[license]: https://github.com/jmg049/dtmf_table/blob/main/LICENSE
+
 [pypi]: https://pypi.org/project/dtmf-table/
 [pypi-img]: https://img.shields.io/pypi/v/dtmf-table?style=for-the-badge&color=009E73&label=PyPI
 
-[license-img]: https://img.shields.io/crates/l/audio_samples?style=for-the-badge&label=license&labelColor=gray
-[license]: https://github.com/jmg049/dtmf_table/blob/main/LICENSE
+[docs-python]: https://jmg049.github.io/dtmf_table/
+[docs-img-py]: https://img.shields.io/pypi/v/dtmf-table?style=for-the-badge&color=009E73&label=PyDocs
