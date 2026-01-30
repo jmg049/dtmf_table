@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "dtmf-table"
-version = "1.1.1"
+version = "1.1.2"
 description = "A zero-heap, Rust backed, const-first DTMF keypad frequency table with runtime tolerance helpers."
 license = "MIT"
 license-files = ["LICENSE"]
@@ -39,7 +39,7 @@ documentation = "https://docs.rs/dtmf_table"
 # Build with the python feature enabled
 features = ["python"]
 python-source = "python"
-module-name = "dtmf_table"
+module-name = "dtmf_table._dtmf_table"
 exclude = ["**/examples/*", "**/tests/*", "**/*.rs"]
 
 [tool.pytest.ini_options]
