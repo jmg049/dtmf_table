@@ -23,7 +23,7 @@ use std::hash::{Hash, Hasher};
 ///     >>> low, high = key.freqs()
 ///     >>> (low, high)
 ///     (770, 1336)
-#[pyclass(name = "DtmfKey", module = "dtmf_table")]
+#[pyclass(name = "DtmfKey", module = "dtmf_table", from_py_object)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PyDtmfKey {
     inner: RustDtmfKey,
@@ -58,7 +58,7 @@ impl PyDtmfKey {
     /// Returns:
     ///     str: Single character representing the key
     #[pyo3(signature = (), text_signature = "($self) -> str")]
-    fn to_char(&self) -> char {
+    const fn to_char(&self) -> char {
         self.inner.to_char()
     }
 
@@ -67,7 +67,7 @@ impl PyDtmfKey {
     /// Returns:
     ///     tuple[int, int]: (low_frequency_hz, high_frequency_hz)
     #[pyo3(signature = (), text_signature = "($self) -> tuple[int, int]")]
-    fn freqs(&self) -> (u16, u16) {
+    const fn freqs(&self) -> (u16, u16) {
         self.inner.freqs()
     }
 
@@ -107,7 +107,7 @@ impl PyDtmfKey {
 ///     '1'
 ///     >>> (tone.low_hz, tone.high_hz)
 ///     (697, 1209)
-#[pyclass(name = "DtmfTone", module = "dtmf_table")]
+#[pyclass(name = "DtmfTone", module = "dtmf_table", from_py_object)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PyDtmfTone {
     inner: RustDtmfTone,
@@ -123,7 +123,7 @@ impl PyDtmfTone {
     ///     high_hz (int): High frequency in Hz
     #[new]
     #[pyo3(signature = (key: "DtmfKey", low_hz: "int", high_hz: "int"), text_signature = "(key: DtmfKey, low_hz: int, high_hz: int)")]
-    fn new(key: PyDtmfKey, low_hz: u16, high_hz: u16) -> Self {
+    const fn new(key: PyDtmfKey, low_hz: u16, high_hz: u16) -> Self {
         PyDtmfTone {
             inner: RustDtmfTone {
                 key: key.inner,
@@ -135,7 +135,7 @@ impl PyDtmfTone {
 
     /// The DTMF key for this tone.
     #[getter]
-    fn key(&self) -> PyDtmfKey {
+    const fn key(&self) -> PyDtmfKey {
         PyDtmfKey {
             inner: self.inner.key,
         }
@@ -143,13 +143,13 @@ impl PyDtmfTone {
 
     /// Low frequency in Hz.
     #[getter]
-    fn low_hz(&self) -> u16 {
+    const fn low_hz(&self) -> u16 {
         self.inner.low_hz
     }
 
     /// High frequency in Hz.
     #[getter]
-    fn high_hz(&self) -> u16 {
+    const fn high_hz(&self) -> u16 {
         self.inner.high_hz
     }
 
@@ -227,7 +227,7 @@ impl PyDtmfTable {
     /// Create a new DTMF table instance.
     #[new]
     #[pyo3(signature = (), text_signature = "()")]
-    fn new() -> Self {
+    const fn new() -> Self {
         PyDtmfTable {
             inner: RustDtmfTable::new(),
         }
@@ -317,8 +317,8 @@ impl PyDtmfTable {
     /// Returns:
     ///     tuple[int, int]: (low_frequency_hz, high_frequency_hz)
     #[staticmethod]
-    #[pyo3(signature = (key), text_signature = "(key: DtmfKey) -> tuple[int, int]")]
-    fn lookup_key(key: PyDtmfKey) -> (u16, u16) {
+    #[pyo3(signature = (key: "DtmfKey"), text_signature = "(key: DtmfKey) -> tuple[int, int]")]
+    const fn lookup_key(key: PyDtmfKey) -> (u16, u16) {
         RustDtmfTable::lookup_key(key.inner)
     }
 
@@ -331,7 +331,7 @@ impl PyDtmfTable {
     /// Returns:
     ///     DtmfKey or None: The matching key, or None if no exact match
     #[staticmethod]
-    #[pyo3(signature = (low, high), text_signature = "(low: int, high: int) -> DtmfKey | None")]
+    #[pyo3(signature = (low: "int", high: "int"), text_signature = "(low: int, high: int) -> DtmfKey | None")]
     fn from_pair_exact(low: u16, high: u16) -> Option<PyDtmfKey> {
         RustDtmfTable::from_pair_exact(low, high).map(|key| PyDtmfKey { inner: key })
     }
@@ -345,7 +345,7 @@ impl PyDtmfTable {
     /// Returns:
     ///     DtmfKey or None: The matching key, or None if no exact match
     #[staticmethod]
-    #[pyo3(signature = (a, b), text_signature = "(a: int, b: int) -> DtmfKey | None")]
+    #[pyo3(signature = (a: "int", b: "int"), text_signature = "(a: int, b: int) -> DtmfKey | None")]
     fn from_pair_normalised(a: u16, b: u16) -> Option<PyDtmfKey> {
         RustDtmfTable::from_pair_normalised(a, b).map(|key| PyDtmfKey { inner: key })
     }
@@ -359,7 +359,8 @@ impl PyDtmfTable {
     ///
     /// Returns:
     ///     DtmfKey or None: The matching key within tolerance, or None
-    #[pyo3(signature = (low, high, tol_hz), text_signature = "(low: int, high: int, tol_hz: int) -> DtmfKey | None")]
+    #[allow(clippy::wrong_self_convention)]
+    #[pyo3(signature = (low: "int", high: "int", tol_hz: "int"), text_signature = "(low: int, high: int, tol_hz: int) -> DtmfKey | None")]
     fn from_pair_tol_u32(&self, low: u32, high: u32, tol_hz: u32) -> Option<PyDtmfKey> {
         self.inner
             .from_pair_tol_u32(low, high, tol_hz)
@@ -375,7 +376,8 @@ impl PyDtmfTable {
     ///
     /// Returns:
     ///     DtmfKey or None: The matching key within tolerance, or None
-    #[pyo3(signature = (low, high, tol_hz), text_signature = "($self, low: float, high: float, tol_hz: float) -> DtmfKey | None")]
+    #[allow(clippy::wrong_self_convention)]
+    #[pyo3(signature = (low: "float", high: "float", tol_hz: "float"), text_signature = "($self, low: float, high: float, tol_hz: float) -> DtmfKey | None")]
     fn from_pair_tol_f64(&self, low: f64, high: f64, tol_hz: f64) -> Option<PyDtmfKey> {
         self.inner
             .from_pair_tol_f64(low, high, tol_hz)
@@ -390,7 +392,7 @@ impl PyDtmfTable {
     ///
     /// Returns:
     ///     tuple[DtmfKey, int, int]: (key, snapped_low_hz, snapped_high_hz)
-    #[pyo3(signature = (low, high), text_signature = "($self, low: int, high: int) -> tuple[DtmfKey, int, int]")]
+    #[pyo3(signature = (low: "int", high: "int"), text_signature = "($self, low: int, high: int) -> tuple[DtmfKey, int, int]")]
     fn nearest_u32(&self, low: u32, high: u32) -> (PyDtmfKey, u16, u16) {
         let (key, snapped_low, snapped_high) = self.inner.nearest_u32(low, high);
         (PyDtmfKey { inner: key }, snapped_low, snapped_high)
@@ -404,7 +406,7 @@ impl PyDtmfTable {
     ///
     /// Returns:
     ///     tuple[DtmfKey, int, int]: (key, snapped_low_hz, snapped_high_hz)
-    #[pyo3(signature = (low, high), text_signature = "($self, low: float, high: float) -> tuple[DtmfKey, int, int]")]
+    #[pyo3(signature = (low: "float", high: "float"), text_signature = "($self, low: float, high: float) -> tuple[DtmfKey, int, int]")]
     fn nearest_f64(&self, low: f64, high: f64) -> (PyDtmfKey, u16, u16) {
         let (key, snapped_low, snapped_high) = self.inner.nearest_f64(low, high);
         (PyDtmfKey { inner: key }, snapped_low, snapped_high)

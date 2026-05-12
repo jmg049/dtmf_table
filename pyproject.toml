@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "dtmf-table"
-version = "1.1.3"
+version = "1.1.4"
 description = "A zero-heap, Rust backed, const-first DTMF keypad frequency table with runtime tolerance helpers."
 license = "MIT"
 license-files = ["LICENSE"]
